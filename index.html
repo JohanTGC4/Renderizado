@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es" class="light dark">
+
+<head>
+
+ <meta charset="UTF-8">
+ <title>Formulario</title>
+ <script src="js/registraServiceWorker.js"></script>
+ <!-- Resumen para los motores de búsqueda. -->
+ <meta name="description" content="Ejemplo de PWA con Material Design">
+
+ <meta name="viewport" content="width=device-width">
+ <meta name="theme-color" content="#fffbfe">
+ <link rel="icon" sizes="32x32" href="favicon.ico">
+ <link rel="manifest" href="site.webmanifest">
+ <script src="ungap/custom-elements.js"></script>
+
+ <script type="module" src="js/configura.js"></script>
+ <link rel="stylesheet" href="css/estilos.css">
+ <link rel="stylesheet" href="css/transicion_pestanas.css">
+ <meta name="viewport" content="width=device-width">
+
+ <!-- Color de la barra de navegación de Chrome en dispositivos móviles. -->
+ <meta name="theme-color" content="#fffbfe">
+
+ <!-- Ícono para la página web, que normalmente se pone en la raíz del sitio.
+  Puede ser diferente para cada página. -->
+  <script type="module" src="lib/js/consumeJson.js"></script>
+
+  <script type="module" src="lib/js/muestraError.js"></script>
+ <!-- Permite a los navegadores, que como Safari no soportan el estándar
+  completo de custom elementsm, lo cumplan totalmente. Debe ponerse en todas
+  las páginas. -->
+ <script src="ungap/custom-elements.js"></script>
+
+ <!-- Configuración de todas las páginas con JavaSript. -->
+ <script type="module" src="js/configura.js"></script>
+ <link rel="stylesheet" href="css/estilos.css">
+ <link rel="stylesheet" href="css/transicion_pestanas.css">
+
+</head>
+
+<body>
+    <md-top-app-bar adicional="tab" headline="headline">
+
+        <h1>Formulario</h1>
+      
+       </md-top-app-bar>
+      
+       <h1 id="headline">Formulario</h1>
+      
+       <nav-tab-fixed id="tab"></nav-tab-fixed>
+       <form id="form" novalidate onsubmit="procesaForm(event)">
+
+     
+        <main>
+          <p class="md-filled-text-field">
+            <md-select-menu id="selectIntegrante" required aria-labelledby="etiquetaIntegrante" options="opcionesDeIntegrante"
+              oninput="copiaMensajes()">
+            </md-select-menu>
+            <span id="etiquetaIntegrante" accesskey="G">Integrante del equipo*</span>
+            <small id="supportingGenero">* Obligatorio</small>
+          </p>
+    
+          <input type="hidden" id="chiste" name="chiste" value="eee">
+    
+          <p>
+            <button class="md-filled-button" style="width: 100%;">Mostrar Chiste</button>
+          </p>
+    
+        </main>
+    
+        <md-options-menu id="opcionesDeIntegrante" aria-label="Opciones de integrantes">
+          <span data-value="" title="Selecciona un integrante"></span>
+          <span data-value="mari">🌱 Barrera Cortes Marisol</span>
+          <span data-value="carmen">🌱 Muñoz Amador Carmen Juana</span>
+          <span data-value="mich">🌾 Palomino Gómez Michelle Zoé</span>
+          <span data-value="johan">🌾 Tufiño González Johan Yael</span>
+        </md-options-menu>
+    
+        <nav-drw id="nav"></nav-drw>
+    
+      </form>
+    
+      <script type="module">
+    
+        import { exportaAHtml } from "./lib/js/exportaAHtml.js";
+        import { muestraError } from "./lib/js/muestraError.js";
+        import { submitForm } from "./lib/js/submitForm.js";
+    
+        /**
+         * @param {Event} event
+         */
+        async function procesaForm(event) {
+          event.preventDefault(); // Evita el envío automático del formulario
+          try {
+            const chiste = recomienda(selectIntegrante.value);
+            console.log("Chiste seleccionado: ", chiste); // Depuración del chiste
+            document.getElementById('chiste').value = chiste;
+    
+            const respuesta = await submitForm("srv/procesa.php", event);
+            console.log("Respuesta del servidor: ", respuesta); // Depuración de la respuesta
+            alert(respuesta.body); // Puedes modificar esto según la respuesta del servidor
+          } catch (error) {
+            muestraError(error);
+          }
+        }
+    
+        exportaAHtml(procesaForm);
+    
+        /** 
+         * @param {string} integrante 
+         */
+        function recomienda(integrante) {
+          if (integrante === "mari") {
+            return "¿Por qué los programadores prefieren el oscuro? Porque la luz atrae a los bugs.";
+          } else if (integrante === "carmen") {
+            return "Un programador se ahoga y llama a su amigo: “¡Ayuda! ¡No sé nadar!” Y el amigo responde: “¿Has probado reiniciar?”.";
+          } else if (integrante === "mich") {
+            return "¿Por qué los informáticos no pueden jugar a escondidas? Porque siempre se quedan en debug.";
+          } else if (integrante === "johan") {
+            return "¿Qué hace una abeja en el gimnasio? ¡Zum-ba!.";
+          }
+        }
+    
+      </script>
+    
+      <script type="module">
+        import { muestraError } from "./lib/js/muestraError.js";
+        import { muestraTextoDeAyuda } from "./lib/js/muestraTextoDeAyuda.js";
+    
+        function copiaMensajes() {
+          muestraTextoDeAyuda(selectIntegrante, supportingGenero, "* Obligatorio");
+        }
+        window["copiaMensajes"] = copiaMensajes;
+    
+      </script>
+    
+    </body>
+    
+    </html>
